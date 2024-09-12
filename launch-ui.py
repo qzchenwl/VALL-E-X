@@ -67,6 +67,7 @@ if torch.cuda.is_available():
     device = torch.device("cuda", 0)
 if torch.backends.mps.is_available():
     device = torch.device("mps")
+print(f"device = {device}")
 # VALL-E-X model
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
 if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
@@ -520,7 +521,7 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='language')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'IPA'], value='auto-detect', label='language')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",
