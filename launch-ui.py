@@ -227,6 +227,13 @@ def make_prompt(name, wav, sr, save=True):
     torch.cuda.empty_cache()
     return text, lang
 
+def preprocess_text(text, language):
+    lang_token = langdropdown2token[language]
+    token2lang[lang_token]
+    text = lang_token + text + lang_token
+    phone_tokens, langs, phonemes = text_tokenizer.tokenize(text=f"_{text}".strip(), return_phonemes=True)
+    return f'phonemes: {phonemes}'
+
 @torch.no_grad()
 def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, transcript_content):
     global model, text_collater, text_tokenizer, audio_tokenizer
@@ -334,7 +341,7 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
 
     enroll_x_lens = text_prompts.shape[-1]
     logging.info(f"synthesize text: {text}")
-    phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
+    phone_tokens, langs, phonemes = text_tokenizer.tokenize(text=f"_{text}".strip(), return_phonemes=True)
     text_tokens, text_tokens_lens = text_collater(
         [
             phone_tokens
@@ -363,7 +370,7 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
     model.to('cpu')
     torch.cuda.empty_cache()
 
-    message = f"sythesized text: {text}"
+    message = f"sythesized text: {text}\nphonemes: {phonemes}"
     return message, (24000, samples.squeeze(0).cpu().numpy())
 
 
@@ -548,6 +555,17 @@ def main():
                         outputs=[text_output, audio_output],
                         fn=infer_from_audio,
                         cache_examples=False,)
+        with gr.Tab("Preprocess Text"):
+            with gr.Column():
+                textbox_5 = gr.TextArea(label="Text", value="", placeholder="Type your sentence here")
+                language_dropdown_5 = gr.Dropdown( label='Language', choices=['English', '中文', '日本語'], value='English')
+            with gr.Column():
+                text_output_5 = gr.Textbox(label="Message")
+                btn_5 = gr.Button("Preprocess!")
+                btn_5.click(preprocess_text,
+                          inputs=[textbox_5, language_dropdown_5],
+                          outputs=[text_output_5])
+
         with gr.Tab("Make prompt"):
             gr.Markdown(make_prompt_md)
             with gr.Row():
@@ -580,7 +598,7 @@ def main():
                     textbox_3 = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix'], value='auto-detect',
+                    language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix', 'IPA'], value='auto-detect',
                                                     label='language')
                     accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
                                                   label='accent')
