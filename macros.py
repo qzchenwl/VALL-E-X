@@ -22,7 +22,7 @@ token2lang = {
     '[ZH]': "zh",
     '[JA]': "ja",
     "[EN]": "en",
-    '[IPA]': "en",
+    '[MS]': "ms",
     "": "mix"
 }
 
@@ -36,6 +36,6 @@ langdropdown2token = {
     'English': "[EN]",
     '中文': "[ZH]",
     '日本語': "[JA]",
-    'Mix': "",
-    'IPA': "[IPA]"
+    '马来语': "[MS]",
+    'Mix': ""
 }

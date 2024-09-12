@@ -69,14 +69,15 @@ if torch.backends.mps.is_available():
     device = torch.device("mps")
 print(f"device = {device}")
 # VALL-E-X model
+checkpoint_file = "vallex-checkpoint2.pt"
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
-if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
+if not os.path.exists(os.path.join("./checkpoints/", checkpoint_file)):
     import wget
     try:
         logging.info("Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
         # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
         wget.download("https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt",
-                      out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
+                      out=f"./checkpoints/{checkpoint_file}", bar=wget.bar_adaptive)
     except Exception as e:
         logging.info(e)
         raise Exception(
@@ -95,7 +96,7 @@ model = VALLE(
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     )
-checkpoint = torch.load("./checkpoints/vallex-checkpoint.pt", map_location='cpu')
+checkpoint = torch.load(f"./checkpoints/{checkpoint_file}", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
 )
@@ -528,8 +529,8 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'IPA'], value='auto-detect', label='language')
-                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', '马来语'], value='auto-detect', label='language')
+                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語', '马来语'], value='no-accent', label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",
                                           value="", elem_id=f"prompt-name")

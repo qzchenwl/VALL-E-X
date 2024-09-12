@@ -440,6 +440,7 @@ class VALLE(VALLF):
             'en': 0,
             'zh': 1,
             'ja': 2,
+            'ms': 3
         }
         self.ar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
         self.nar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
