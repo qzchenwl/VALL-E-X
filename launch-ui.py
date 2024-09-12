@@ -265,7 +265,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
 
     # tokenize text
     logging.info(f"synthesize text: {text}")
-    phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
+    phone_tokens, langs, phonemes = text_tokenizer.tokenize(text=f"_{text}".strip(), return_phonemes=True)
     text_tokens, text_tokens_lens = text_collater(
         [
             phone_tokens
@@ -303,7 +303,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
     model.to('cpu')
     torch.cuda.empty_cache()
 
-    message = f"text prompt: {text_pr}\nsythesized text: {text}"
+    message = f"text prompt: {text_pr}\nsythesized text: {text}\nphonemes: {phonemes}"
     return message, (24000, samples.squeeze(0).cpu().numpy())
 
 @torch.no_grad()
@@ -620,7 +620,7 @@ def main():
                               outputs=[text_output_4, audio_output_4])
 
     webbrowser.open("http://127.0.0.1:7860")
-    app.launch()
+    app.launch(server_name="0.0.0.0", server_port=6006)
 
 if __name__ == "__main__":
     formatter = (

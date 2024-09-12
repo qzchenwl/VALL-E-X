@@ -12,7 +12,7 @@ class PhonemeBpeTokenizer:
   def __init__(self, tokenizer_path = "./utils/g2p/bpe_1024.json"):
     self.tokenizer = Tokenizer.from_file(tokenizer_path)
 
-  def tokenize(self, text):
+  def tokenize(self, text, return_phonemes=False):
     # 1. convert text to phoneme
     phonemes, langs = _clean_text(text, ['cje_cleaners'])
     # 2. replace blank space " " with "_"
@@ -22,7 +22,10 @@ class PhonemeBpeTokenizer:
     assert(len(phoneme_tokens) == len(langs))
     if not len(phoneme_tokens):
       raise ValueError("Empty text is given")
-    return phoneme_tokens, langs
+    if return_phonemes:
+      return phoneme_tokens, langs, phonemes
+    else:
+      return phoneme_tokens, langs
 
 def text_to_sequence(text, cleaner_names):
   '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
